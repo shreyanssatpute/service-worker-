@@ -1,64 +1,32 @@
-// Service Worker File
-
-// Define a cache name
-const CACHE_NAME = 'qr-it-cache-v1';
-
-// List of files to be cached
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  'https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js'
+const staticDevCoffee = "dev-coffee-site-v1";
+const assets = [
+  "/",
+  "/index.html",
+  "/css/style.css",
+  "/js/app.js",
+  "/images/coffee1.jpg",
+  "/images/coffee2.jpg",
+  "/images/coffee3.jpg",
+  "/images/coffee4.jpg",
+  "/images/coffee5.jpg",
+  "/images/coffee6.jpg",
+  "/images/coffee7.jpg",
+  "/images/coffee8.jpg",
+  "/images/coffee9.jpg"
 ];
 
-// Install event: cache the files
-self.addEventListener('install', function(event) {
-  // Perform install steps
-  console.log('Service Worker installation started');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
-
-// Fetch event: serve the cached files
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-
-// Activate event: clean up old caches
-self.addEventListener('activate', function(event) {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+self.addEventListener("install", installEvent => {
+  installEvent.waitUntil(
+    caches.open(staticDevCoffee).then(cache => {
+      cache.addAll(assets);
     })
   );
 });
 
-// Listen for the 'message' event
-self.addEventListener('message', function(event) {
-  if (event.data === 'hello') {
-    console.log('hello world');
-  }
+self.addEventListener("fetch", fetchEvent => {
+  fetchEvent.respondWith(
+    caches.match(fetchEvent.request).then(res => {
+      return res || fetch(fetchEvent.request);
+    })
+  );
 });
